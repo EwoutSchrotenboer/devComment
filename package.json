@@ -1,0 +1,52 @@
+{
+    "name": "devcomment",
+    "displayName": "Developer Comment",
+    "description": "Generates a configurable comment in code, including optional date, name, branchname and partial branchname (can be filtered through a regular expression)",
+    "version": "0.1.0",
+    "publisher": "ewoutio",
+    "engines": {
+        "vscode": "^1.24.0"
+    },
+    "categories": [
+        "Snippets"
+    ],
+    "keywords": [
+        "developer", "comment", "branch", "tracking", "issue", "issuenumber"
+    ],
+    "activationEvents": [
+        "onCommand:extension.addComment"
+    ],
+    "main": "./out/extension",
+    "contributes": {
+        "commands": [
+            {
+                "command": "extension.addComment",
+                "title": "Add Dev Comment"
+            }
+        ],
+        "keybindings": [
+            {
+                "command": "extension.addComment",
+                "key": "alt+shift+d",
+                "when": "editorTextFocus"
+            }
+        ]
+    },
+    "scripts": {
+        "vscode:prepublish": "npm run compile",
+        "compile": "tsc -p ./",
+        "watch": "tsc -watch -p ./",
+        "postinstall": "node ./node_modules/vscode/bin/install"
+    },
+    "devDependencies": {
+        "@types/date-fns": "^2.6.0",
+        "@types/node": "^7.0.43",
+        "tslint": "^5.8.0",
+        "typescript": "^2.6.1",
+        "vscode": "^1.1.6"
+    },
+    "dependencies": {
+        "date-fns": "^1.29.0",
+        "simple-git": "^1.96.0"
+    }
+}
