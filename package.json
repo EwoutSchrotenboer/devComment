@@ -11,7 +11,12 @@
         "Snippets"
     ],
     "keywords": [
-        "developer", "comment", "branch", "tracking", "issue", "issuenumber"
+        "developer",
+        "comment",
+        "branch",
+        "tracking",
+        "issue",
+        "issuenumber"
     ],
     "activationEvents": [
         "onCommand:extension.addComment"
@@ -40,9 +45,9 @@
     },
     "devDependencies": {
         "@types/date-fns": "^2.6.0",
-        "@types/node": "^7.0.43",
+        "@types/node": "^10.9.4",
         "tslint": "^5.8.0",
-        "typescript": "^2.6.1",
+        "typescript": "^3.0.3",
         "vscode": "^1.1.6"
     },
     "dependencies": {

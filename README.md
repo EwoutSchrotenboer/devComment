@@ -1,61 +1,29 @@
 # devcomment README
 
-This is the README for your extension "devcomment". After writing up a brief description, we recommend including the following sections.
+Initial commit, will expand with more documentation later.
 
-## Features
+Configuration parameters:
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+Add the following to your settings.json:
 
-For example if there is an image subfolder under your extension project workspace:
+"devComment": {
+    "partialBranch": "LS-\\d{4,5}",
+    "user": "ES",
+    "dateFormat": "YYYYMMDD",
+    "commentFormat": "{date}: {user}: {identifier} - "
+},
 
-\!\[feature X\]\(images/feature-x.png\)
+partialBranch contains the data you want to retrieve from branchnames. In the example, a LS with either 4 or 5 digits is retrieved from the branchname and injected.
+the user defines the initials or the username
+dateformat is parsed by date-fns ( https://date-fns.org/docs/Getting-Started )
+the commentformat parses the other parameters, as well as plain text.
+{date}, {user}, {branch} and {identifier} are supported, where {identifier} gets the partialBranch-information.
 
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
-
-## Extension Settings
-
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
-
-For example:
-
-This extension contributes the following settings:
-
-* `myExtension.enable`: enable/disable this extension
-* `myExtension.thing`: set to `blah` to do something
-
-## Known Issues
-
-Calling out known issues can help limit users opening duplicate issues against your extension.
-
-## Release Notes
-
-Users appreciate release notes as you update your extension.
-
-### 1.0.0
-
-Initial release of ...
-
-### 1.0.1
-
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
-
------------------------------------------------------------------------------------------------------------
-
-## Working with Markdown
-
-**Note:** You can author your README using Visual Studio Code.  Here are some useful editor keyboard shortcuts:
-
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux)
-* Toggle preview (`Shift+CMD+V` on macOS or `Shift+Ctrl+V` on Windows and Linux)
-* Press `Ctrl+Space` (Windows, Linux) or `Cmd+Space` (macOS) to see a list of Markdown snippets
-
-### For more information
-
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
-
-**Enjoy!**
+Currently the following languages/fileformats are supported for inserting comments:
+XML,
+HTML,
+Javascript,
+JSX,
+Typescript,
+TSX,
+C#
