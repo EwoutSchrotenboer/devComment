@@ -80,6 +80,7 @@ export class Formatter {
             case "typescriptreact":
             case "csharp":
                 comment = "// " + comment;
+                break;
             default:
                 break;
         }
