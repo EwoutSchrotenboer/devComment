@@ -1,4 +1,4 @@
-# devcomment README
+# Developer Comment README
 
 ## Configuration parameters
 
