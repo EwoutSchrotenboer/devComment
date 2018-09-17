@@ -2,12 +2,11 @@
     "name": "devcomment",
     "displayName": "Developer Comment",
     "description": "Generates a configurable comment in code, including optional date, name, branchname and partial branchname (can be filtered through a regular expression)",
-    "version": "0.1.0",
+    "version": "0.2.0",
     "publisher": "ewoutio",
     "repository": {
         "type": "git",
         "url": "https://github.com/EwoutIO/devComment.git"
-        
     },
     "engines": {
         "vscode": "^1.24.0"
