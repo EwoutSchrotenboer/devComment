@@ -5,7 +5,7 @@ import { Formatter } from "./formatter";
 import { Inserter } from "./inserter";
 
 export function activate(context: vscode.ExtensionContext) {
-    let disposable = vscode.commands.registerCommand('extension.addComment', () => {
+    const disposable = vscode.commands.registerCommand('extension.addComment', () => {
 
         // todo: add keybinds
         let languageId = "";
@@ -17,11 +17,13 @@ export function activate(context: vscode.ExtensionContext) {
         const formatter = new Formatter(languageId);
         const inserter = new Inserter(languageId);
 
-        formatter.FormatDevComment().then((result) => {
-            inserter.InsertInTextEditor(result).then((position) => {
+        formatter.CreateComment()
+            .then((result) => {
+                return inserter.InsertInTextEditor(result);
+            })
+            .then((position) => {
                 inserter.MoveCursor(position);
             });
-        });
     });
 
     context.subscriptions.push(disposable);

@@ -1,6 +1,13 @@
 import * as dateFns from 'date-fns';
 import * as vsCode from 'vscode';
 
+const branch = "{branch}";
+const identifier = "{identifier}";
+const user = "{user}";
+const date = "{date}";
+type Keyword = typeof branch | typeof identifier | typeof user | typeof date;
+
+
 /**
  * The Formatter class. Responsible for formatting the developer comment message, depending on the settings.
  */
@@ -22,53 +29,43 @@ export class Formatter {
      * @param {boolean} [withCommentTags] Defines whether comment tags should be added to the formatted string
      * @returns {Promise<string>} The promise with the formatted string.
      */
-    public FormatDevComment(): Promise<string> {
-        // First, retrieve the format, or use the default format
+    public CreateComment = (): Promise<string> => {
         const commentFormat = this.devCommentConfiguration.get<string>("commentFormat");
         let baseComment = commentFormat !== undefined ? commentFormat : "{date}:";
 
-        return new Promise((resolve, reject) => {
-            if (baseComment !== null && baseComment !== undefined) {
-                baseComment = this.AddCommentTags(baseComment);
+        return new Promise((resolve) => resolve(this.UpdateComment(baseComment)));
+    }
 
-                if (baseComment.indexOf("{date}") > -1) {
-                    baseComment = baseComment.replace("{date}", this.GetCurrentDateString());
-                }
+    private UpdateComment = (baseComment: string): Promise<string> => {
+        return new Promise((resolve) => {
+            let comment = this.AddCommentTags(baseComment);
 
-                if (baseComment.indexOf("{user}") > -1) {
-                    baseComment = baseComment.replace("{user}", this.GetUser());
-                }
+            comment = this.replaceKeyword(comment, date, this.GetCurrentDateString());
+            comment = this.replaceKeyword(comment, user, this.GetUser());
 
-                // Only get the branch information if one or both of these parameters are used.
-                if (baseComment.indexOf("{branch}") > -1 || baseComment.indexOf("{identifier}") > -1) {
-                    this.GetBranchName().then((result) => {
+            if (this.containsAny(comment, [branch, identifier])) {
+                this.GetBranchName().then((branchName) => {
+                    comment = this.replaceKeyword(comment, branch, branchName);
+                    comment = this.replaceKeyword(comment, identifier, this.GetBranchIdentifier(branchName));
 
-                        if (baseComment.indexOf("{branch}") > -1) {
-                            baseComment = baseComment.replace("{branch}", result);
-                        }
-
-                        if (baseComment.indexOf("{identifier}") > -1) {
-                            baseComment = baseComment.replace("{identifier}", this.GetPartialBranchString(result));
-                        }
-
-                        resolve(baseComment);
-                    });
-                } else {
-                    resolve(baseComment);
-                }
-
-            } else {
-                reject("DevComment is not configured correctly, please check the documentation.");
+                    resolve(comment);
+                });
+            }
+            else {
+                resolve(comment);
             }
         });
     }
+
+    private containsAny = (comment: string, keywords: Keyword[]): boolean => keywords.some((keyword) => { return comment.indexOf(keyword) > -1; });
+    private replaceKeyword = (comment: string, keyword: Keyword, value: string): string => comment.replace(keyword, value);
 
     /**
      * Adds comment tags for the supported languages
      * @param {string} comment the base comment without tags
      * @returns {string} the comment with tags
      */
-    private AddCommentTags(comment: string): string {
+    private AddCommentTags = (comment: string): string => {
         switch (this.languageId) {
             case "xml":
             case "html":
@@ -94,22 +91,16 @@ export class Formatter {
      * @param {string} branchName The current branch
      * @returns {string} The identifier (the partial branchname)
      */
-    private GetPartialBranchString(branchName: string): string {
+    private GetBranchIdentifier = (branchName: string): string => {
         const partialBranchRegex = this.devCommentConfiguration.get<string>("partialBranch");
 
-        if (partialBranchRegex !== null && partialBranchRegex !== undefined) {
+        if (partialBranchRegex) {
             const regEx = new RegExp(partialBranchRegex);
             const value = branchName.match(regEx);
 
-            if (value !== null) {
-                return value[0];
-            }
-            else {
-                // If the regex does not match the branchname, return an empty string
-                return "";
-            }
+            // If the regex does not match the branchname, return an empty string
+            return value ? value[0] : "";
         } else {
-            // If there is no regex, do nothing, return the full branchname
             return branchName;
         }
     }
@@ -119,7 +110,7 @@ export class Formatter {
      * If no branch can be found, this resolves to an empty string.
      * @returns {Promise<string>}
      */
-    private GetBranchName(): Promise<string> {
+    private GetBranchName = (): Promise<string> => {
         return new Promise((resolve) => {
             let simpleGit: any;
 
@@ -143,28 +134,23 @@ export class Formatter {
      * Returns a formatted date string, with the default formatting or the given setting.
      * @param format The format to use, this is usually retrieved from the settings.
      */
-    private GetCurrentDateString(): string {
+    private GetCurrentDateString = (): string => {
         const format = this.devCommentConfiguration.get<string>("dateFormat");
 
-        if (format !== null && format !== undefined) {
+        if (format) {
             try {
                 return dateFns.format(Date.now(), format);
             } catch {
                 // do nothing, return the default.
-                
+
             }
         }
 
-        return dateFns.format("YYYYMMDD");
+        return dateFns.format(Date.now(), "YYYYMMDD");
     }
 
-    private GetUser(): string {
+    private GetUser = (): string => {
         const userName = this.devCommentConfiguration.get<string>("user");
-
-        if (userName !== null && userName !== undefined) {
-            return userName;
-        }
-
-        return "";
+        return userName ? userName : "";
     }
 }
