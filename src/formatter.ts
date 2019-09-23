@@ -146,7 +146,7 @@ export class Formatter {
             }
         }
 
-        return dateFns.format(Date.now(), "YYYYMMDD");
+        return dateFns.format(Date.now(), "yyyyMMdd");
     }
 
     private GetUser = (): string => {

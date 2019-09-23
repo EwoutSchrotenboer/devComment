@@ -18,7 +18,7 @@ export class Inserter {
      * @returns {Promise<number>} A promise with the position of the last character of the comment,
      * can be used for repositioning of the cursor.
      */
-    public InsertInTextEditor(text: string): Promise<number> {
+    public InsertInTextEditor = (text: string): Promise<number> => {
         return new Promise<number>((resolve) => {
             let selection: vsCode.Selection;
             let startLine: number;
@@ -29,8 +29,16 @@ export class Inserter {
 
                 selection = editor.selection;
                 startLine = selection.start.line;
+                const editorLine = editor.document.lineAt(startLine);
 
+                // Add comment to the end of the line if it contains text. Add extra space.
+               if (editor.document.lineAt(startLine).isEmptyOrWhitespace) {
                 startCharacter = selection.start.character;
+               } else {
+                   startCharacter = editorLine.range.end.character;
+                   text = " " + text;
+               }
+
 
                 editor.edit((editBuilder) => {
                     const pos = new vsCode.Position(startLine, startCharacter);
@@ -47,7 +55,7 @@ export class Inserter {
      * Moves the cursor to within the comment tags, if the languageId is supported.
      * @param {number} oldPosition The position of the last character of the comment.
      */
-    public MoveCursor(oldPosition: number) {
+    public MoveCursor = (oldPosition: number) => {
         if (vsCode.window !== undefined && vsCode.window.activeTextEditor !== undefined) {
             const editor = vsCode.window.activeTextEditor;
 
