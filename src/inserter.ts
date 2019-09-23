@@ -1,9 +1,12 @@
 import * as vsCode from "vscode";
+import { getConfiguration, IDevCommentSettings } from "./configuration";
 
 /**
  * The inserter class, responsible for inserting the generated comment into the active document.
  */
 export class Inserter {
+
+    private settings: IDevCommentSettings = getConfiguration();
 
     /**
      *Creates an instance of Inserter.
@@ -31,14 +34,14 @@ export class Inserter {
                 startLine = selection.start.line;
                 const editorLine = editor.document.lineAt(startLine);
 
-                // Add comment to the end of the line if it contains text. Add extra space.
-               if (editor.document.lineAt(startLine).isEmptyOrWhitespace) {
-                startCharacter = selection.start.character;
-               } else {
-                   startCharacter = editorLine.range.end.character;
-                   text = " " + text;
-               }
-
+                // Add comment to the end of the line if it contains text. Move cursor to end, add extra space.
+                if (this.settings.moveToEnd && !editor.document.lineAt(startLine).isEmptyOrWhitespace) {
+                    startCharacter = editorLine.range.end.character;
+                    text = " " + text;
+                    this.setPosition(editor, startLine, startCharacter);
+                } else {
+                    startCharacter = selection.start.character;
+                }
 
                 editor.edit((editBuilder) => {
                     const pos = new vsCode.Position(startLine, startCharacter);
@@ -64,11 +67,18 @@ export class Inserter {
                 const position = editor.selection.active;
 
                 // To move the cursor to within the comment tag, jump 4 characters back (to skip to before the --> )
-                const calculateNewPosition = position.character + oldPosition - 4;
-                const newPosition = position.with(position.line, calculateNewPosition);
-                const newSelection = new vsCode.Selection(newPosition, newPosition);
-                editor.selection = newSelection;
+                const calculatedNewPosition = position.character + oldPosition - 4;
+                this.setPosition(editor, position.line, calculatedNewPosition);
             }
         }
+    }
+
+    /**
+     * Sets the new cursor position in the given editor.
+     */
+    private setPosition = (editor: vsCode.TextEditor, line: number, cursorPosition: number): void => {
+        const newPosition = editor.selection.active.with(line, cursorPosition);
+        const newSelection = new vsCode.Selection(newPosition, newPosition);
+        editor.selection = newSelection;
     }
 }

@@ -40,7 +40,41 @@
                 "key": "alt+shift+d",
                 "when": "editorTextFocus"
             }
-        ]
+        ],
+        "configuration": {
+            "title": "Developer Comment",
+            "properties" : {
+                "devComment.commentFormat" : {
+                    "type": "string",
+                    "default": "// {date}:",
+                    "description": "Specifies the template of the comment. See the documentation for the possible keywords that can be used."
+                },
+                "devComment.user" : {
+                    "type": "string",
+                    "default": "",
+                    "description": "Define the username to use when {user} is called in the comment format."
+                },
+                "devComment.dateFormat" : {
+                    "type": "string",
+                    "default": "yyyyMMdd",
+                    "markdownDescription": "The dateformat to use in the comment when {date} is called. Please refer to the [dateFns documentation](https://date-fns.org/v2.1.0/docs/format) for valid formats."
+                },
+                "devComment.partialBranch" : {
+                    "type": "string",
+                    "default": "",
+                    "description": "A regular expression that will be used when {partialBranch} is defined. It extracts the given expression result from the active branch."
+                },
+                "devComment.moveToEnd" : {
+                    "type": "boolean",
+                    "default": "false",
+                    "description": "Move the cursor to the end of the line if the line is not empty."
+                },
+                "devComment.additionalFormats" : {
+                    "type": "array",
+                    "default": [{ "languageId": "php", "commentSymbol":"#"}]
+                }
+            }
+        }
     },
     "scripts": {
         "vscode:prepublish": "npm run compile",

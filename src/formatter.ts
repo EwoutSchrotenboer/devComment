@@ -1,21 +1,22 @@
 import * as dateFns from 'date-fns';
 import * as vsCode from 'vscode';
+import { getConfiguration } from "./configuration";
 
-const branch = "{branch}";
-const identifier = "{identifier}";
-const user = "{user}";
-const date = "{date}";
-type Keyword = typeof branch | typeof identifier | typeof user | typeof date;
-
+enum Keyword {
+    Branch = "{branch}",
+    PartialBranch = "{partialBranch}",
+    User = "{user}",
+    Date = "{date}"
+}
 
 /**
  * The Formatter class. Responsible for formatting the developer comment message, depending on the settings.
  */
 export class Formatter {
     /**
-     *Retrieves the devComment Configuration.
+     * The DevComment configuration
      */
-    private devCommentConfiguration = vsCode.workspace.getConfiguration("devComment");
+    private settings = getConfiguration();
 
     /**
      *Creates an instance of Formatter.
@@ -30,7 +31,7 @@ export class Formatter {
      * @returns {Promise<string>} The promise with the formatted string.
      */
     public CreateComment = (): Promise<string> => {
-        const commentFormat = this.devCommentConfiguration.get<string>("commentFormat");
+        const commentFormat = this.settings.commentFormat;
         let baseComment = commentFormat !== undefined ? commentFormat : "{date}:";
 
         return new Promise((resolve) => resolve(this.UpdateComment(baseComment)));
@@ -40,13 +41,13 @@ export class Formatter {
         return new Promise((resolve) => {
             let comment = this.AddCommentTags(baseComment);
 
-            comment = this.replaceKeyword(comment, date, this.GetCurrentDateString());
-            comment = this.replaceKeyword(comment, user, this.GetUser());
+            comment = this.replaceKeyword(comment, Keyword.Date, this.GetCurrentDateString());
+            comment = this.replaceKeyword(comment, Keyword.User, this.GetUser());
 
-            if (this.containsAny(comment, [branch, identifier])) {
+            if (this.containsAny(comment, [Keyword.Branch, Keyword.PartialBranch])) {
                 this.GetBranchName().then((branchName) => {
-                    comment = this.replaceKeyword(comment, branch, branchName);
-                    comment = this.replaceKeyword(comment, identifier, this.GetBranchIdentifier(branchName));
+                    comment = this.replaceKeyword(comment, Keyword.Branch, branchName);
+                    comment = this.replaceKeyword(comment, Keyword.PartialBranch, this.GetBranchIdentifier(branchName));
 
                     resolve(comment);
                 });
@@ -66,6 +67,15 @@ export class Formatter {
      * @returns {string} the comment with tags
      */
     private AddCommentTags = (comment: string): string => {
+        // Check for user-defined languages first, move to the defaults otherwise.
+        const userDefined = this.settings.additionalFormats.find((format) => {
+            return format.languageId === this.languageId;
+        });
+
+        if (userDefined) {
+            return `${userDefined.commentSymbol} ${comment}`;
+        }
+
         switch (this.languageId) {
             case "xml":
             case "html":
@@ -92,7 +102,7 @@ export class Formatter {
      * @returns {string} The identifier (the partial branchname)
      */
     private GetBranchIdentifier = (branchName: string): string => {
-        const partialBranchRegex = this.devCommentConfiguration.get<string>("partialBranch");
+        const partialBranchRegex = this.settings.partialBranch;
 
         if (partialBranchRegex) {
             const regEx = new RegExp(partialBranchRegex);
@@ -135,7 +145,7 @@ export class Formatter {
      * @param format The format to use, this is usually retrieved from the settings.
      */
     private GetCurrentDateString = (): string => {
-        const format = this.devCommentConfiguration.get<string>("dateFormat");
+        const format = this.settings.dateFormat;
 
         if (format) {
             try {
@@ -149,8 +159,5 @@ export class Formatter {
         return dateFns.format(Date.now(), "yyyyMMdd");
     }
 
-    private GetUser = (): string => {
-        const userName = this.devCommentConfiguration.get<string>("user");
-        return userName ? userName : "";
-    }
+    private GetUser = (): string => this.settings.user ? this.settings.user : "";
 }
