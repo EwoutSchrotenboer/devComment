@@ -9,7 +9,9 @@ enum Keyword {
     Branch = "{branch}",
     PartialBranch = "{partialBranch}",
     User = "{user}",
-    Date = "{date}"
+    Date = "{date}",
+    // Keyword Identifier is deprecated as of 1.0.0
+    Identifier = "{identifier}"
 }
 
 /**
@@ -47,11 +49,13 @@ export class Formatter {
             comment = this.replaceKeyword(comment, Keyword.Date, this.getCurrentDateString());
             comment = this.replaceKeyword(comment, Keyword.User, this.getUser());
 
-            if (this.containsAny(comment, [Keyword.Branch, Keyword.PartialBranch])) {
+            if (this.containsAny(comment, [Keyword.Branch, Keyword.PartialBranch, Keyword.Identifier])) {
                 this.getBranchName().then((branchName) => {
                     comment = this.replaceKeyword(comment, Keyword.Branch, branchName);
                     comment = this.replaceKeyword(comment, Keyword.PartialBranch, this.getBranchIdentifier(branchName));
 
+                    // Keyword Identifier is deprecated as of 1.0.0
+                    comment = this.replaceKeyword(comment, Keyword.Identifier, this.getBranchIdentifier(branchName));
                     resolve(comment);
                 });
             }

@@ -8,6 +8,7 @@ export interface IDevCommentSettings {
     user: string;
     dateFormat: string;
     partialBranch: string;
+    identifier: string;
     moveToEnd: boolean;
     additionalFormats: IAdditionalFormat[];
 }
@@ -32,6 +33,7 @@ export const getConfiguration = (): IDevCommentSettings => {
         dateFormat: configuration.get<string>("dateFormat"),
         moveToEnd: configuration.get<boolean>("moveToEnd"),
         partialBranch: configuration.get<string>("partialBranch"),
+        identifier: configuration.get<string>("identifier"),
         user: configuration.get<string>("user"),
     } as IDevCommentSettings;
 };

@@ -64,6 +64,11 @@
                     "default": "",
                     "description": "A regular expression that will be used when {partialBranch} is defined. It extracts the given expression result from the active branch."
                 },
+                "devComment.identifier" : {
+                    "type": "string",
+                    "default": "",
+                    "description": "[DEPRECATED] Please use partialBranch. (A regular expression that will be used when {identifier} is defined. It extracts the given expression result from the active branch.)"
+                },
                 "devComment.moveToEnd" : {
                     "type": "boolean",
                     "default": "false",
