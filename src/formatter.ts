@@ -2,6 +2,9 @@ import * as dateFns from 'date-fns';
 import * as vsCode from 'vscode';
 import { getConfiguration } from "./configuration";
 
+/**
+ * The keywords that can be defined in the comment template
+ */
 enum Keyword {
     Branch = "{branch}",
     PartialBranch = "{partialBranch}",
@@ -30,24 +33,24 @@ export class Formatter {
      * @param {boolean} [withCommentTags] Defines whether comment tags should be added to the formatted string
      * @returns {Promise<string>} The promise with the formatted string.
      */
-    public CreateComment = (): Promise<string> => {
+    public createComment = (): Promise<string> => {
         const commentFormat = this.settings.commentFormat;
         let baseComment = commentFormat !== undefined ? commentFormat : "{date}:";
 
-        return new Promise((resolve) => resolve(this.UpdateComment(baseComment)));
+        return new Promise((resolve) => resolve(this.updateComment(baseComment)));
     }
 
-    private UpdateComment = (baseComment: string): Promise<string> => {
+    private updateComment = (baseComment: string): Promise<string> => {
         return new Promise((resolve) => {
-            let comment = this.AddCommentTags(baseComment);
+            let comment = this.addCommentTags(baseComment);
 
-            comment = this.replaceKeyword(comment, Keyword.Date, this.GetCurrentDateString());
-            comment = this.replaceKeyword(comment, Keyword.User, this.GetUser());
+            comment = this.replaceKeyword(comment, Keyword.Date, this.getCurrentDateString());
+            comment = this.replaceKeyword(comment, Keyword.User, this.getUser());
 
             if (this.containsAny(comment, [Keyword.Branch, Keyword.PartialBranch])) {
-                this.GetBranchName().then((branchName) => {
+                this.getBranchName().then((branchName) => {
                     comment = this.replaceKeyword(comment, Keyword.Branch, branchName);
-                    comment = this.replaceKeyword(comment, Keyword.PartialBranch, this.GetBranchIdentifier(branchName));
+                    comment = this.replaceKeyword(comment, Keyword.PartialBranch, this.getBranchIdentifier(branchName));
 
                     resolve(comment);
                 });
@@ -58,15 +61,7 @@ export class Formatter {
         });
     }
 
-    private containsAny = (comment: string, keywords: Keyword[]): boolean => keywords.some((keyword) => { return comment.indexOf(keyword) > -1; });
-    private replaceKeyword = (comment: string, keyword: Keyword, value: string): string => comment.replace(keyword, value);
-
-    /**
-     * Adds comment tags for the supported languages
-     * @param {string} comment the base comment without tags
-     * @returns {string} the comment with tags
-     */
-    private AddCommentTags = (comment: string): string => {
+    private addCommentTags = (comment: string): string => {
         // Check for user-defined languages first, move to the defaults otherwise.
         const userDefined = this.settings.additionalFormats.find((format) => {
             return format.languageId === this.languageId;
@@ -95,13 +90,7 @@ export class Formatter {
         return comment;
     }
 
-    /**
-     * Gets the identifier, depending on the configured regular expression in the settings. If no regex is defined, the whole branchname is returned.
-     * If no match is found, an empty string is returned.
-     * @param {string} branchName The current branch
-     * @returns {string} The identifier (the partial branchname)
-     */
-    private GetBranchIdentifier = (branchName: string): string => {
+    private getBranchIdentifier = (branchName: string): string => {
         const partialBranchRegex = this.settings.partialBranch;
 
         if (partialBranchRegex) {
@@ -115,12 +104,7 @@ export class Formatter {
         }
     }
 
-    /**
-     * Returns the branchname of the git-branch that contains the current active document. 
-     * If no branch can be found, this resolves to an empty string.
-     * @returns {Promise<string>}
-     */
-    private GetBranchName = (): Promise<string> => {
+    private getBranchName = (): Promise<string> => {
         return new Promise((resolve) => {
             let simpleGit: any;
 
@@ -140,11 +124,7 @@ export class Formatter {
         });
     }
 
-    /**
-     * Returns a formatted date string, with the default formatting or the given setting.
-     * @param format The format to use, this is usually retrieved from the settings.
-     */
-    private GetCurrentDateString = (): string => {
+    private getCurrentDateString = (): string => {
         const format = this.settings.dateFormat;
 
         if (format) {
@@ -159,5 +139,9 @@ export class Formatter {
         return dateFns.format(Date.now(), "yyyyMMdd");
     }
 
-    private GetUser = (): string => this.settings.user ? this.settings.user : "";
+    private getUser = (): string => this.settings.user ? this.settings.user : "";
+    
+    private containsAny = (comment: string, keywords: Keyword[]): boolean => keywords.some((keyword) => { return comment.indexOf(keyword) > -1; });
+
+    private replaceKeyword = (comment: string, keyword: Keyword, value: string): string => comment.replace(keyword, value);
 }
