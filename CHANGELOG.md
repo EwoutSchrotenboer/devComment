@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.0.3
+
+- Updated default configuration
+
 ## 1.0.1-1.0.2
 
 - Bugfixes in minified code
