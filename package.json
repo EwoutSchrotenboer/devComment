@@ -46,7 +46,7 @@
             "properties": {
                 "devComment.commentFormat": {
                     "type": "string",
-                    "default": "// {date}:",
+                    "default": "{date}:",
                     "description": "Specifies the template of the comment. See the documentation for the possible keywords that can be used."
                 },
                 "devComment.user": {
