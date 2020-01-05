@@ -1,5 +1,7 @@
 # Developer Comment README
 
+This plugin allows you to add a small configurable comment to your current line, using a combination of date/time, (partial) branch name and/or username, allowing for quick Todo/fixme/issue-tracking comments without having to look up the current date, feature or reference number.
+
 ## Configuration parameters
 
 Open the user settings and navigate to the Developer Comment Extension section
