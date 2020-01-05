@@ -2,7 +2,7 @@
     "name": "devcomment",
     "displayName": "Developer Comment",
     "description": "Generates a configurable comment in code, including optional date, name, branchname and partial branchname (can be filtered through a regular expression)",
-    "version": "1.0.3",
+    "version": "1.1.0",
     "publisher": "ewoutio",
     "license": "MIT",
     "repository": {
@@ -97,13 +97,13 @@
     },
     "devDependencies": {
         "@types/date-fns": "^2.6.0",
-        "@types/node": "^10.14.17",
-        "ts-loader": "^6.1.2",
-        "tslint": "^5.20.0",
-        "typescript": "^3.6.2",
+        "@types/node": "^10.17.13",
+        "ts-loader": "^6.2.1",
+        "tslint": "^5.20.1",
+        "typescript": "^3.7.4",
         "vscode": "^1.1.36",
-        "webpack": "^4.40.2",
-        "webpack-cli": "^3.3.9"
+        "webpack": "^4.41.5",
+        "webpack-cli": "^3.3.10"
     },
     "dependencies": {
         "date-fns": "2.1.0",

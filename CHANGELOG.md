@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.1.0
+
+- Updated vulnerable packages
+
 ## 1.0.3
 
 - Updated default configuration
@@ -16,4 +20,5 @@
 - Minified code
 
 ## 0.4.0
+
 - Initial version.
