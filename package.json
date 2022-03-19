@@ -110,6 +110,6 @@
     },
     "dependencies": {
         "date-fns": "2.16.1",
-        "simple-git": "2.20.1"
+        "simple-git": "3.3.0"
     }
 }
